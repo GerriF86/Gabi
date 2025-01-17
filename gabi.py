@@ -9,14 +9,14 @@ DATA_FILE = "kpi_data.json"
 # Daten laden oder initialisieren
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r") as f:
-        data = json.load(f)
+        kpi_data = json.load(f)
 else:
-    data = {"monatsziele": {}, "wochenwerte": {}}
+    kpi_data = {"monatsziele": {}, "wochenwerte": {}}
 
 # Funktion zum Speichern der Daten
 def save_data():
     with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump(kpi_data, f, indent=4)
 
 def create_gauge(title, value, max_value):
     # ... (bleibt unverändert)
@@ -42,86 +42,85 @@ st.set_page_config(page_title="KPI Dashboard", page_icon=":chart_with_upwards_tr
 st.title("Gabi's Antikmöbel-Erfolge")
 
 # CSS für minimalistisches Design (bleibt unverändert)
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #f5f5f5;
-        font-family: sans-serif;
-    }
-    .stApp {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    .st-bu {
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 5px;
-        margin-bottom: 10px;
-    }
-    .stProgress > div > div {
-        background-color: var(--color);
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""<style>...</style>""", unsafe_allow_html=True)
 
 # Monatsziele
 st.subheader("Monatsziele")
-monatsziele_keys = list(data.get("monatsziele", ["Anzahl Einkäufe", "Ausgabenbudget", "Anzahl Verkäufe", "Umsatz", "Gewinn"]))
+monatsziele_keys = list(kpi_data.get("monatsziele", ["Anzahl Einkäufe", "Ausgabenbudget", "Anzahl Verkäufe", "Umsatz", "Gewinn"]))
 
-# Ensure a valid number of columns (at least 1)
-num_cols_monatsziele = max(len(monatsziele_keys), 1)  # Use max to guarantee at least 1 column
+# Calculate the number of columns, defaulting to 10 if necessary
+number_of_monatsziele_columns = max(len(monatsziele_keys), 10) #Default ist nun 10
 
-cols_monatsziele = st.columns(num_cols_monatsziele)
+try:
+    number_of_monatsziele_columns = int(number_of_monatsziele_columns)
+except ValueError:
+    st.error("Ungültige Anzahl von Spalten berechnet. Verwende Standardwert (10).")
+    number_of_monatsziele_columns = 10
 
-for i, kpi in enumerate(monatsziele_keys):
-    if kpi not in data["monatsziele"]:
-        data["monatsziele"][kpi] = 0
-    data["monatsziele"][kpi] = cols_monatsziele[i].number_input(f"Monatsziel für {kpi}", value=data["monatsziele"][kpi], key=f"monatsziel_{kpi}")
+monatsziele_columns = st.columns(number_of_monatsziele_columns)
+
+for kpi_index, kpi_name in enumerate(monatsziele_keys):
+    # Important: Check if the index is within the valid range of columns
+    if kpi_index < number_of_monatsziele_columns: #Überprüfung hinzugefügt
+        if kpi_name not in kpi_data["monatsziele"]:
+            kpi_data["monatsziele"][kpi_name] = 0
+        kpi_data["monatsziele"][kpi_name] = monatsziele_columns[kpi_index].number_input(
+            f"Monatsziel für {kpi_name}",
+            value=kpi_data["monatsziele"][kpi_name],
+            key=f"monatsziel_{kpi_name}",
+        )
 save_data()
-
 
 # Wochenwerte und -übersicht
 st.subheader("Wochenwerte & Wochenübersicht")
 aktuelle_woche = st.number_input("Aktuelle Woche", min_value=1, step=1)
 
-monatsziele_keys = list(data["monatsziele"].keys()) #Die Keys aus den Monatszielen verwenden
-num_cols = len(monatsziele_keys)
-cols = st.columns(num_cols)
+monatsziele_keys = list(kpi_data["monatsziele"].keys())
+number_of_wochenwerte_columns = max(len(monatsziele_keys), 10)
 
-if str(aktuelle_woche) not in data["wochenwerte"]:
-    data["wochenwerte"][str(aktuelle_woche)] = {}
+try:
+    number_of_wochenwerte_columns = int(number_of_wochenwerte_columns)
+except ValueError:
+    st.error("Ungültige Anzahl von Spalten berechnet. Verwende Standardwert (10).")
+    number_of_wochenwerte_columns = 10
 
-for i, kpi in enumerate(monatsziele_keys):
-    if kpi not in data["wochenwerte"][str(aktuelle_woche)]:
-        data["wochenwerte"][str(aktuelle_woche)][kpi] = 0
-    data["wochenwerte"][str(aktuelle_woche)][kpi] = cols[i].number_input(f"Wert für {kpi}", value=data["wochenwerte"][str(aktuelle_woche)][kpi], key=f"wochenwert_{kpi}")
+wochenwerte_columns = st.columns(number_of_wochenwerte_columns)
+
+if str(aktuelle_woche) not in kpi_data["wochenwerte"]:
+    kpi_data["wochenwerte"][str(aktuelle_woche)] = {}
+
+for kpi_index, kpi_name in enumerate(monatsziele_keys):
+    if kpi_index < number_of_wochenwerte_columns: #Überprüfung hinzugefügt
+        if kpi_name not in kpi_data["wochenwerte"][str(aktuelle_woche)]:
+            kpi_data["wochenwerte"][str(aktuelle_woche)][kpi_name] = 0
+        kpi_data["wochenwerte"][str(aktuelle_woche)][kpi_name] = wochenwerte_columns[kpi_index].number_input(
+            f"Wert für {kpi_name}",
+            value=kpi_data["wochenwerte"][str(aktuelle_woche)][kpi_name],
+            key=f"wochenwert_{kpi_name}",
+        )
 save_data()
 
-if str(aktuelle_woche) in data["wochenwerte"]:
-    for i, kpi in enumerate(monatsziele_keys):
-        if data["monatsziele"][kpi] != 0:
-            prozentsatz = (data["wochenwerte"][str(aktuelle_woche)][kpi] / data["monatsziele"][kpi]) * 100
-            color = "Grün" if prozentsatz > 66 else "Gelb" if prozentsatz > 33 else "Rot"
-            cols[i].plotly_chart(create_gauge(kpi, prozentsatz, 100))
-            # Motivierende Texte
-            if prozentsatz < 33:
-                cols[i].write(f"Gabi, du schaffst das! ")
-            elif prozentsatz < 66:
-                cols[i].write(f"Halbzeit! Weiter so, Gabi! ")
+if str(aktuelle_woche) in kpi_data["wochenwerte"]:
+    for kpi_index, kpi_name in enumerate(monatsziele_keys):
+        if kpi_index < number_of_wochenwerte_columns: #Überprüfung hinzugefügt
+            if kpi_data["monatsziele"][kpi_name] != 0:
+                prozentsatz = (kpi_data["wochenwerte"][str(aktuelle_woche)][kpi_name] / kpi_data["monatsziele"][kpi_name]) * 100
+                color = "Grün" if prozentsatz > 66 else "Gelb" if prozentsatz > 33 else "Rot"
+                wochenwerte_columns[kpi_index].plotly_chart(create_gauge(kpi_name, prozentsatz, 100))
+                # Motivierende Texte
+                if prozentsatz < 33:
+                    wochenwerte_columns[kpi_index].write(f"Gabi, du schaffst das! ")
+                elif prozentsatz < 66:
+                    wochenwerte_columns[kpi_index].write(f"Halbzeit! Weiter so, Gabi! ")
+                else:
+                    wochenwerte_columns[kpi_index].write(f"Super Arbeit, Gabi! Du rockst das! ")
             else:
-                cols[i].write(f"Super Arbeit, Gabi! Du rockst das! ")
-        else:
-            cols[i].write(f"{kpi}: Monatsziel ist 0, daher keine Prozentanzeige")
+                wochenwerte_columns[kpi_index].write(f"{kpi_name}: Monatsziel ist 0, daher keine Prozentanzeige")
 
 # Verlaufsanzeige
 st.subheader("Verlauf")
 try:
-    wochen_df = pd.DataFrame.from_dict(data["wochenwerte"], orient='index').T
+    wochen_df = pd.DataFrame.from_dict(kpi_data["wochenwerte"], orient='index').T
     st.line_chart(wochen_df)
 except:
     st.write("Noch keine Daten für den Verlauf vorhanden")
