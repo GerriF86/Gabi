@@ -19,6 +19,7 @@ def save_data():
         json.dump(data, f, indent=4)
 
 def create_gauge(title, value, max_value):
+    # ... (bleibt unverändert)
     fig = go.Figure(go.Indicator(
         mode = "gauge+number",
         value = value,
@@ -37,24 +38,24 @@ def create_gauge(title, value, max_value):
                 'value': value}}))
     return fig
 
-st.set_page_config(page_title="KPI Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide") #Breiteres Layout
+st.set_page_config(page_title="KPI Dashboard", page_icon=":chart_with_upwards_trend:", layout="wide")
 st.title("Gabi's Antikmöbel-Erfolge")
 
-#CSS für minimalistisches Design
+# CSS für minimalistisches Design (bleibt unverändert)
 st.markdown(
     """
     <style>
     body {
-        background-color: #f5f5f5; /* Heller Hintergrund */
+        background-color: #f5f5f5;
         font-family: sans-serif;
     }
     .stApp {
-        max-width: 1200px; /*Maximale Breite für bessere Darstellung auf großen Bildschirmen*/
-        margin: 0 auto; /*Zentrierung*/
+        max-width: 1200px;
+        margin: 0 auto;
         padding: 20px;
     }
     .st-bu {
-        background-color: white; /*Hintergrund der Eingabefelder*/
+        background-color: white;
         border: 1px solid #ddd;
         border-radius: 5px;
         padding: 5px;
@@ -67,32 +68,42 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-# Monatsziele eingeben (unter den Wochenwerten und -übersicht)
+
+# Monatsziele
 st.subheader("Monatsziele")
-cols_monatsziele = st.columns(len(data.get("monatsziele",["Anzahl Einkäufe", "Ausgabenbudget", "Anzahl Verkäufe", "Umsatz", "Gewinn"])))
-for i,kpi in enumerate(data.get("monatsziele",["Anzahl Einkäufe", "Ausgabenbudget", "Anzahl Verkäufe", "Umsatz", "Gewinn"])):
+monatsziele_keys = list(data.get("monatsziele", ["Anzahl Einkäufe", "Ausgabenbudget", "Anzahl Verkäufe", "Umsatz", "Gewinn"]))
+
+# Ensure a valid number of columns (at least 1)
+num_cols_monatsziele = max(len(monatsziele_keys), 1)  # Use max to guarantee at least 1 column
+
+cols_monatsziele = st.columns(num_cols_monatsziele)
+
+for i, kpi in enumerate(monatsziele_keys):
     if kpi not in data["monatsziele"]:
         data["monatsziele"][kpi] = 0
     data["monatsziele"][kpi] = cols_monatsziele[i].number_input(f"Monatsziel für {kpi}", value=data["monatsziele"][kpi], key=f"monatsziel_{kpi}")
 save_data()
 
 
-# Wochenwerte und -übersicht nebeneinander
+# Wochenwerte und -übersicht
 st.subheader("Wochenwerte & Wochenübersicht")
 aktuelle_woche = st.number_input("Aktuelle Woche", min_value=1, step=1)
 
-cols = st.columns(len(data["monatsziele"]))
+monatsziele_keys = list(data["monatsziele"].keys()) #Die Keys aus den Monatszielen verwenden
+num_cols = len(monatsziele_keys)
+cols = st.columns(num_cols)
 
 if str(aktuelle_woche) not in data["wochenwerte"]:
-    data["wochenwerte"][str(aktuelle_woche)]={}
-for i, kpi in enumerate(data["monatsziele"]):
+    data["wochenwerte"][str(aktuelle_woche)] = {}
+
+for i, kpi in enumerate(monatsziele_keys):
     if kpi not in data["wochenwerte"][str(aktuelle_woche)]:
-        data["wochenwerte"][str(aktuelle_woche)][kpi]=0
+        data["wochenwerte"][str(aktuelle_woche)][kpi] = 0
     data["wochenwerte"][str(aktuelle_woche)][kpi] = cols[i].number_input(f"Wert für {kpi}", value=data["wochenwerte"][str(aktuelle_woche)][kpi], key=f"wochenwert_{kpi}")
 save_data()
 
 if str(aktuelle_woche) in data["wochenwerte"]:
-    for i, kpi in enumerate(data["monatsziele"]):
+    for i, kpi in enumerate(monatsziele_keys):
         if data["monatsziele"][kpi] != 0:
             prozentsatz = (data["wochenwerte"][str(aktuelle_woche)][kpi] / data["monatsziele"][kpi]) * 100
             color = "Grün" if prozentsatz > 66 else "Gelb" if prozentsatz > 33 else "Rot"
@@ -106,7 +117,8 @@ if str(aktuelle_woche) in data["wochenwerte"]:
                 cols[i].write(f"Super Arbeit, Gabi! Du rockst das! ")
         else:
             cols[i].write(f"{kpi}: Monatsziel ist 0, daher keine Prozentanzeige")
-#Verlaufsanzeige
+
+# Verlaufsanzeige
 st.subheader("Verlauf")
 try:
     wochen_df = pd.DataFrame.from_dict(data["wochenwerte"], orient='index').T
