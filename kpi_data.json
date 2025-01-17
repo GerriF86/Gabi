@@ -1,0 +1,18 @@
+{
+    "monatsziele": {
+        "Anzahl Eink\u00e4ufe": 1,
+        "Ausgabenbudget": 1,
+        "Anzahl Verk\u00e4ufe": 1,
+        "Umsatz": 1,
+        "Gewinn": 0
+    },
+    "wochenwerte": {
+        "1": {
+            "Anzahl Eink\u00e4ufe": 1,
+            "Ausgabenbudget": 1,
+            "Anzahl Verk\u00e4ufe": 1,
+            "Umsatz": 0,
+            "Gewinn": 0
+        }
+    }
+}
