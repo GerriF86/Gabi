@@ -1,1 +1,11 @@
-
+{
+    "Erstkontakt": "Sehr geehrte/r Herr/Frau [Name],\n\nmit großem Interesse habe ich Ihre Anzeige »[Titel]« entdeckt. Als Liebhaber/in von Möbeln der [50er/60er/70er/80er] Jahre...",
+    "Preisverhandlung": "Ihre Preisvorstellung von [Preis] erscheint mir etwas hoch. Wären Sie zu einer Anpassung auf [Betrag] bereit? [Optional: Begründung]",
+    "Terminvereinbarung": "Ich würde das Stück gerne persönlich begutachten. Wann wäre ein Besichtigungstermin möglich?",
+    "Zustandsabfrage": "Könnten Sie mir bitte Details zum Erhaltungszustand nennen? Insbesondere interessieren mich...",
+    "Lieferoptionen": "Besteht die Möglichkeit der professionellen Lieferung? Falls ja, welche Kosten wären damit verbunden?",
+    "Provenienz": "Könnten Sie mir etwas zur Herkunft und Geschichte des Möbelstücks mitteilen?",
+    "Zahlungsmodalitäten": "Welche Zahlungsmethoden akzeptieren Sie?",
+    "Kompromissvorschlag": "Wären Sie mit einem Mittelweg bei [Betrag] einverstanden?",
+    "Dokumentation": "Lägen Ihnen weitere Dokumente oder Zertifikate zum Stück vor?"
+}

@@ -1,1 +1,11 @@
-
+{
+    "Erstkontakt": "Sehr geehrte/r Herr/Frau [Name],\n\nich bin auf Ihre Anzeige '[Titel]' aufmerksam geworden und habe großes Interesse an [Produkt/Dienstleistung].",
+    "Preisverhandlung": "Wäre es möglich, den Preis auf [Betrag] zu reduzieren?",
+    "Terminvereinbarung": "Wann hätten Sie Zeit für eine Besichtigung?",
+    "Weitere Informationen": "Könnten Sie mir bitte weitere Informationen zu [Details] zukommen lassen?",
+    "Besichtigungstermin": "Ich würde mir das Objekt gerne vor Ort ansehen. Wann wäre ein Termin möglich?",
+    "Vertragsdetails": "Welche Vertragsbedingungen gelten für die Anmietung?",
+    "Preisvorschlag": "Wären Sie mit [Betrag] € einverstanden?",
+    "Gegenangebot": "Ich könnte Ihnen [Betrag] € anbieten.",
+    "Kompromiss": "Vielleicht könnten wir uns bei [Betrag] € treffen?"
+}
